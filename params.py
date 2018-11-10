@@ -1,5 +1,5 @@
 # parameters of training
-batchsize = 3
+batchsize = 2
 lr = 1e-4
 trigger = (500000, 'iteration')
 annealing_interval = (200000, 'iteration')

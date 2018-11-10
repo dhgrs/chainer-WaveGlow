@@ -56,6 +56,7 @@ result = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 os.mkdir(result)
 shutil.copy(__file__, os.path.join(result, __file__))
 shutil.copy('utils.py', os.path.join(result, 'utils.py'))
+shutil.copy('params.py', os.path.join(result, 'params.py'))
 shutil.copy('generate.py', os.path.join(result, 'generate.py'))
 shutil.copytree('WaveGlow', os.path.join(result, 'WaveGlow'))
 

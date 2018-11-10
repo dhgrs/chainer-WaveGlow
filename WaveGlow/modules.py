@@ -11,37 +11,37 @@ def _normalize(W):
 
 
 def weight_norm(link):
-    assert hasattr(link, 'W')
+    # assert hasattr(link, 'W')
 
-    def _W(self):
-        return self.v * self.g
+    # def _W(self):
+    #     return self.v * self.g
 
-    def _remove(self):
-        W = _W(self)
-        del self.g
-        del self.v
-        del self.W
-        with self.init_scope():
-            self.W = chainer.Parameter(W)
+    # def _remove(self):
+    #     W = _W(self)
+    #     del self.g
+    #     del self.v
+    #     del self.W
+    #     with self.init_scope():
+    #         self.W = chainer.Parameter(W)
 
-    def _replace(args):
-        W = _W(args.link)
-        g, v = _normalize(_W(args.link).array)
-        args.link.g.array[...] = g
-        args.link.v.array[...] = v
-        args.link.W = W
+    # def _replace(args):
+    #     W = _W(args.link)
+    #     g, v = _normalize(_W(args.link).array)
+    #     args.link.g.array[...] = g
+    #     args.link.v.array[...] = v
+    #     args.link.W = W
 
-    g, v = _normalize(link.W.array)
-    del link.W
-    with link.init_scope():
-        link.g = chainer.Parameter(g)
-        link.v = chainer.Parameter(v)
+    # g, v = _normalize(link.W.array)
+    # del link.W
+    # with link.init_scope():
+    #     link.g = chainer.Parameter(g)
+    #     link.v = chainer.Parameter(v)
 
-    link.remove = _remove
+    # link.remove = _remove
 
-    hook = chainer.LinkHook()
-    hook.forward_preprocess = _replace
-    link.add_hook(hook)
+    # hook = chainer.LinkHook()
+    # hook.forward_preprocess = _replace
+    # link.add_hook(hook)
     return link
 
 

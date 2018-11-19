@@ -28,7 +28,7 @@ path = args.input
 n = 1  # batchsize; now suporrts only 1
 inputs = Preprocess(
     params.sr, params.n_fft, params.hop_length, params.n_mels, params.fmin,
-    params.fmax, params.top_db, None)(path)
+    params.fmax, None)(path)
 
 _, condition = inputs
 condition = numpy.expand_dims(condition, axis=0)
@@ -56,7 +56,7 @@ if use_gpu:
 condition = chainer.Variable(condition)
 
 with chainer.using_config('enable_backprop', False):
-    output = glow.generate(condition)
+    output = glow.generate(condition, args.var)
 
 output = chainer.cuda.to_cpu(output.array)
 output = numpy.squeeze(output)

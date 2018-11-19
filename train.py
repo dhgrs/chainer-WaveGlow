@@ -41,11 +41,11 @@ else:
 
 preprocess = Preprocess(
     params.sr, params.n_fft, params.hop_length, params.n_mels, params.fmin,
-    params.fmax, params.top_db, params.length)
+    params.fmax, params.length)
 
 dataset = chainer.datasets.TransformDataset(files, preprocess)
 if params.split_seed is None:
-    train, valid = chainer.datasets.split_dataset_random(
+    train, valid = chainer.datasets.split_dataset(
         dataset, int(len(dataset) * 0.9))
 else:
     train, valid = chainer.datasets.split_dataset_random(
@@ -109,16 +109,16 @@ trainer.extend(extensions.observe_lr(), trigger=params.report_interval)
 trainer.extend(extensions.PrintReport(
     [
         'epoch', 'iteration',
-        'main/gaussian_nll', 'main/log_s', 'main/log_det_W', 'main/loss',
-        'validation/main/gaussian_nll', 'validation/main/log_s',
+        'main/nll', 'main/log_s', 'main/log_det_W', 'main/loss',
+        'validation/main/nll', 'validation/main/log_s',
         'validation/main/log_det_W', 'validation/main/loss']),
     trigger=params.report_interval)
 trainer.extend(extensions.PlotReport(
     ['main/loss', 'validation/main/loss'],
     'iteration', file_name='loss.png', trigger=params.report_interval))
 trainer.extend(extensions.PlotReport(
-    ['main/gaussian_nll', 'validation/main/gaussian_nll'],
-    'iteration', file_name='gaussian_nll.png', trigger=params.report_interval))
+    ['main/nll', 'validation/main/nll'],
+    'iteration', file_name='nll.png', trigger=params.report_interval))
 trainer.extend(extensions.PlotReport(
     ['main/log_s', 'validation/main/log_s'],
     'iteration', file_name='log_s.png', trigger=params.report_interval))

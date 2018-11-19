@@ -6,7 +6,7 @@ import chainer.links as L
 def _normalize(W):
     xp = chainer.cuda.get_array_module(W)
     g = xp.sqrt(xp.sum(W ** 2, axis=(1, 2), keepdims=True))
-    v = W / g
+    v = W / (g + 1e-16)
     return g, v
 
 
@@ -14,7 +14,7 @@ def weight_norm(link):
     assert hasattr(link, 'W')
 
     def _W(self):
-        return self.v * self.g
+        return self.v * (self.g + 1e-16)
 
     def _remove(self):
         W = _W(self)
@@ -52,6 +52,9 @@ class Invertible1x1Convolution(chainer.link.Link):
 
         W = xp.linalg.qr(xp.random.normal(
             0, 1, (channel, channel)))[0].astype(xp.float32)
+
+        if xp.linalg.det(W) < 0:
+            W[:, 0] *= -1
         W = W.reshape(W.shape + (1,))
 
         with self.init_scope():
@@ -63,7 +66,7 @@ class Invertible1x1Convolution(chainer.link.Link):
 
     def __call__(self, x):
         return F.convolution_1d(x, self.W), \
-            x.shape[0] * x.shape[-1] * F.log(F.absolute(F.det(self.W[..., 0])))
+            x.shape[0] * x.shape[-1] * F.log(F.det(self.W[..., 0]))
 
     def reverse(self, x):
         return F.convolution_1d(x, self.invW)
@@ -122,13 +125,13 @@ class AffineCouplingLayer(chainer.Chain):
     def __call__(self, x, condition):
         x_a, x_b = F.split_axis(x, 2, axis=1)
         log_s, t = self.encoder(x_a, condition)
-        x_b = F.exp(log_s) * (x_b + t)
+        x_b = F.exp(log_s) * x_b + t
         return F.concat((x_a, x_b), axis=1), F.sum(log_s)
 
     def reverse(self, z, condition):
         x_a, x_b = F.split_axis(z, 2, axis=1)
         log_s, t = self.encoder(x_a, condition)
-        x_b = x_b * F.exp(-log_s) - t
+        x_b = (x_b - t) * F.exp(-log_s)
         return F.concat((x_a, x_b), axis=1)
 
 

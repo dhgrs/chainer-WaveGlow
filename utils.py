@@ -6,15 +6,13 @@ import librosa
 
 
 class Preprocess(object):
-    def __init__(self, sr, n_fft, hop_length, n_mels, fmin, fmax, top_db,
-                 length):
+    def __init__(self, sr, n_fft, hop_length, n_mels, fmin, fmax, length):
         self.sr = sr
         self.n_fft = n_fft
         self.hop_length = hop_length
         self.n_mels = n_mels
         self.fmin = fmin
         self.fmax = fmax
-        self.top_db = top_db
 
         if length is None:
             self.length = None
@@ -25,13 +23,17 @@ class Preprocess(object):
     def __call__(self, path):
         # load data(trim and normalize)
         raw, _ = librosa.load(path, self.sr)
-        raw, _ = librosa.effects.trim(raw, self.top_db)
+
+        # add random uniform
         raw += 1
         raw *= (2 ** 16 - 1) / 2
         raw += numpy.random.uniform(size=raw.shape)
         raw /= (2 ** 16 - 1) / 2
         raw -= 1
         raw = raw.astype(numpy.float32)
+
+        # normalize
+        raw /= numpy.abs(raw).max()
 
         # padding/triming
         if self.length is not None:

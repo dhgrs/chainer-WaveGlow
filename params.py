@@ -10,7 +10,7 @@ report_interval = (100, 'iteration')
 # parameters of dataset
 root = '/media/hdd1/datasets/LJSpeech-1.1'
 dataset_type = 'LJSpeech'
-split_seed = 71
+split_seed = None
 
 # parameters of preprocessing
 sr = 22050
@@ -31,4 +31,4 @@ squeeze_factor = 8
 n_flows = 12
 early_every = 4
 early_size = 2
-var = 0.5
+var = 1

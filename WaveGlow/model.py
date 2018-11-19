@@ -35,6 +35,7 @@ class Glow(chainer.Chain):
         self.n_flows = n_flows
         self.early_every = early_every
         self.early_size = early_size
+        self.var = float(var)
         self.ln_var = float(numpy.log(var))
         flows = chainer.ChainList()
         for i in range(n_flows):
@@ -49,12 +50,13 @@ class Glow(chainer.Chain):
             self.flows = flows
 
     def __call__(self, x, condition):
-        _, gaussian_nll, sum_log_s, sum_log_det_W = self._forward(x, condition)
-        loss = gaussian_nll - sum_log_s - sum_log_det_W
-        loss += float(numpy.log(2 ** 16))
+        z, gaussian_nll, sum_log_s, sum_log_det_W = self._forward(x, condition)
+        nll = gaussian_nll - sum_log_s - sum_log_det_W + float(numpy.log(2 ** 16))
+        loss = chainer.functions.mean(z * z / (2 * self.var)) - \
+            sum_log_s - sum_log_det_W
         chainer.reporter.report(
             {
-                'gaussian_nll': gaussian_nll, 'log_s': sum_log_s,
+                'nll': nll, 'log_s': sum_log_s,
                 'log_det_W': sum_log_det_W, 'loss': loss}, self)
         return loss
 

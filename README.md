@@ -2,8 +2,13 @@
 
 A Chainer implementation of WaveGlow( https://nv-adlr.github.io/WaveGlow ).
 
-# Results
-I'll upload after finish the training. I'm getting audible results now. Please wait!
+# Generated samples
+
+I uploaded generated samples to SoundCloud.
+https://soundcloud.com/dhgrs/sets/waveglow
+
+And uploaded pretrained model for LJSpeech to Google Drive.
+https://drive.google.com/drive/folders/1Rsr9tymkrMrPYvo_PMC3o4_Q6C0cqxQR?usp=sharing
 
 # Requirements
 I trained and generated with
